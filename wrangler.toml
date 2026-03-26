@@ -1,0 +1,58 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "obscura-maps"
+compatibility_date = "2024-07-16"
+main = "./src/index.ts"
+services = [
+  { binding = "CATEGORIES", service = "obscura-maps--categories" },
+  { binding = "DISPATCHER", service = "obscura-maps--dispatcher" },
+  { binding = "EXPORTER", service = "obscura-maps--exporter" }
+]
+
+[[kv_namespaces]]
+binding = "OBSCURA_MAPS"
+id = "5400b525228843b7b4a48561fc55824e"
+
+#====
+#====
+
+# Categories fetcher worker
+[env.categories]
+name = "obscura-maps--categories"
+main = "./src/country/categories.ts"
+
+[[env.categories.kv_namespaces]]
+binding = "OBSCURA_MAPS"
+id = "c37206b7db784227b39fc3de43ad76ad"
+
+# Pages dispatcher worker
+[env.dispatcher]
+name = "obscura-maps--dispatcher"
+main = "./src/country/dispatcher.ts"
+services = [
+  { binding = "SCRAPER", service = "obscura-maps--scraper" }
+]
+
+# Pages scraper worker
+[env.scraper]
+name = "obscura-maps--scraper"
+main = "./src/country/scraper.ts"
+
+[[env.scraper.kv_namespaces]]
+binding = "OBSCURA_MAPS"
+id = "c37206b7db784227b39fc3de43ad76ad"
+
+
+#====
+#====
+
+# KML Generator worker
+[env.exporter]
+name = "obscura-maps--exporter"
+main = "./src/kml/exporter.ts"
+services = [
+  { binding = "CATEGORIES", service = "obscura-maps--categories" }
+]
+
+[[env.exporter.kv_namespaces]]
+binding = "OBSCURA_MAPS"
+id = "c37206b7db784227b39fc3de43ad76ad"
